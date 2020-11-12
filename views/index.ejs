@@ -1,0 +1,26 @@
+<%- include('partials/header'); -%>
+<h1>Blackjack</h1>
+<h2>Your bet is $<%= bet %></h2>
+<h2>Dealer is showing: </h2>
+<ul>
+  <% dealerHand.slice(1, 2).forEach(function(item){ %>
+    <li><%= item.name %> <%= item.type %> </li>
+  <% }) %>
+</ul>
+<h2>Your cards are: </h2>
+<ul>
+  <% playerHand.forEach(function(item){ %>
+    <li><%= item.name %> <%= item.type %> </li>
+  <% }) %>
+</ul>
+<h2>Your options are: </h2>
+<ul>
+  <% options.forEach(function(item){ %>
+    <li><a href="/<%= item %>"><%= item %></a> </li>
+  <% }) %>
+</ul>
+
+<h3>Your best total is: <%= playerBestTotal %></h3>
+
+
+<%- include('partials/footer'); -%>

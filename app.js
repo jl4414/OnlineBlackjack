@@ -62,9 +62,6 @@ app.get("/double", function(req, res){
   }
 });
 
-
-
-
 app.post("/bet", function(req, res) {
   bet = Number(req.body.bet);
   if (bet > bank || bet < 0) {
@@ -151,14 +148,6 @@ app.get("/again", function(req, res) {
   dealerHand = [];
   res.redirect("/");
 });
-
-
-
-
-
-
-
-
 
 function sumHand(hand) {
   sum = 0;

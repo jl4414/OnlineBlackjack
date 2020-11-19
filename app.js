@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+app.use(express.static("public"));
 const ejs = require('ejs');
 app.set('view engine', 'ejs');
 const deckOfCards = require("deck-o-cards");
@@ -83,7 +84,7 @@ app.get("/hit", function(req, res) {
   if (sumHand(playerHand) > 21) {
     bank -= bet;
     res.render("final", {
-      title: "You Busted!",
+      title: "You Busted",
       bank: bank,
       bet: "",
       playerHand: playerHand,

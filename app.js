@@ -11,6 +11,8 @@ app.set('view engine', 'ejs');
 const deckOfCards = require("deck-o-cards");
 
 var playerHand = [];
+var playerHand2 = [];
+var playerHand3 = [];
 var dealerHand = [];
 var options = [];
 var bank = 100;
@@ -27,7 +29,7 @@ app.get("/", function(req, res) {
       message: "",
     });
   } else {
-    if (bet * 2 <= bank && dealerHand[0].number == dealerHand[1].number) {
+    if (bet * 2 <= bank && playerHand[0].number == playerHand[1].number) {
       options = ["hit", "stand", "double", "split"];
     } else if (bet * 2 <= bank) {
       options = ["hit", "stand", "double"];
@@ -43,6 +45,91 @@ app.get("/", function(req, res) {
     });
   }
 });
+
+app.get("/split", function(req, res){
+  playerHand2 = [playerHand[1]];
+  playerHand.pop();
+  res.render("split", {
+    title: "Hand 1",
+    bet: bet,
+    dealerHand: dealerHand,
+    playerHand: playerHand,
+    options: ["hit", "stand"],
+    playerBestTotal: bestTotal(playerHand)
+  })
+})
+
+app.get("/splithit", function(req, res){
+  playerHand = playerHand.concat(Array.from(deckOfCards.randomizedDeck()).slice(0, 1));
+  if (sumHand(playerHand) > 21) {
+    bank -= bet;
+    res.render("split", {
+      title: "You Busted!",
+      bet: bet,
+      playerHand: playerHand,
+      dealerHand: dealerHand,
+      options: ["Next"],
+      playerBestTotal: bestTotal(playerHand),
+    });
+  } else {
+    res.render("split", {
+      title: "Hand 1",
+      bet: bet,
+      dealerHand: dealerHand,
+      playerHand: playerHand,
+      options: ["hit", "stand"],
+      playerBestTotal: bestTotal(playerHand)
+    })
+  }
+})
+
+app.get("/splitNext", function(req, res){
+  if (playerHand3.length != 0) {
+    res.redirect("/splitResult");
+  } else {
+  playerHand3 = playerHand;  
+  playerHand = playerHand2;
+  playerHand.concat(Array.from(deckOfCards.randomizedDeck()).slice(0, 1));
+  if (sumHand(playerHand) > 21) {
+    bank -= bet;
+    res.render("split", {
+      title: "You Busted!",
+      bet: bet,
+      playerHand: playerHand,
+      dealerHand: dealerHand,
+      options: ["Next"],
+      playerBestTotal: bestTotal(playerHand),
+    });
+  } else {
+    res.render("split", {
+      title: "Hand 2",
+      bet: bet,
+      dealerHand: dealerHand,
+      playerHand: playerHand,
+      options: ["hit", "stand"],
+      playerBestTotal: bestTotal(playerHand)
+    })
+  }
+  }
+})
+
+app.get("/splitResult", function(req, res){
+  if (bestTotal(playerHand) > 21 && bestTotal(playerHand3) > 21) {
+    res.render("splitfinal", {
+      title: "You lost",
+      bet: bet * 2,
+      bank: bank,
+      dealerHand: dealerHand,
+      playerHand3: playerHand3,
+      playerHand2: playerHand,
+      player3BestTotal: bestTotal(playerHand3),
+      player2BestTotal: bestTotal(playerHand),
+      dealerBestTotal: bestTotal(dealerHand),
+
+    })
+  }
+})
+
 
 app.get("/double", function(req, res){
   bet = bet * 2;
@@ -71,7 +158,8 @@ app.post("/bet", function(req, res) {
       message: "Bet must be between 0 and " + bank,
     });
   } else {
-    playerHand = Array.from(deckOfCards.randomizedDeck()).slice(0, 2);
+    // playerHand = Array.from(deckOfCards.randomizedDeck()).slice(0, 2);
+    playerHand = [{ number: 2, name: 'two', type: '♠️' }, { number: 2, name: 'two', type: '❤️' }];
     dealerHand = Array.from(deckOfCards.randomizedDeck()).slice(0, 2);
     res.redirect("/");
   }

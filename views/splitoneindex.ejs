@@ -1,0 +1,27 @@
+<%- include('partials/header'); -%>
+
+<div class="container">
+    <h1>Hand 1</h1>
+    <h1>Your bet is $<%= bet %></h1>
+    <h2>Dealer is showing: </h2>
+    <ul>
+      <li><%= dealerHand[0].name %> <%= dealerHand[0].type %> </li>
+    </ul>
+    <h2>Your cards are: </h2>
+    <ul>
+      <% playerHand.forEach(function(item){ %>
+      <li><%= item.name %> <%= item.type %> </li>
+      <% }) %>
+    </ul>
+    <h2>Your options are: </h2>
+    <ul>
+      <% options.forEach(function(item){ %>
+      <li><a href="/splitone<%= item %>"><%= item %></a> </li>
+      <% }) %>
+    </ul>
+  
+    <h3>Your best total is: <%= playerBestTotal %></h3>
+
+  </div>
+
+<%- include('partials/footer'); -%>

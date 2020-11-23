@@ -1,0 +1,13 @@
+ejs templates
+Deal:
+    bank: bank,
+    username: ,
+    bet: ,
+    playerHand: 
+    dealerHand: 
+    bestTotal: 
+    options: 
+
+
+
+

@@ -1,12 +1,11 @@
 <%- include('partials/header'); -%>
-<div class = "container">
-    <h1><%= message %></h1>
-    <h1>Place your bet</h1>
-    <h2>The total in the bank is $<%= bank %></h2>
-    <form class="" action="/bet" method="post">
+<h1><%= message %></h1>
+<h1>Place your bet</h1>
+<h2>The total in the bank is $<%= bank %></h2>
+<form class="" action="/bet" method="post">
     <input type="number" name="bet" value="">
     <input type="submit" name="" value="Submit">
-    </form>
-</div>
+</form>
+
 
 <%- include('partials/footer'); -%>

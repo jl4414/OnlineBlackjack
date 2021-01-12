@@ -1,5 +1,11 @@
 <%- include('partials/header'); -%>
-<h4>You've been dealt:</h4>
+<h4>You've been dealt: </h4>
+<h1><%= newCard.name %> <%= newCard.type %></h1>
+
+<br>
+<br>
+
+<h4>Your hand:</h4>
 <h1>
     <% playerHand.forEach(function(item){ %>
     <%= item.name %> <%= item.type %> 

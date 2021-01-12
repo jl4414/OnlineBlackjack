@@ -5,8 +5,22 @@ Deal:
     bet: ,
     playerHand: 
     dealerHand: 
-    bestTotal: 
+    playerBestTotal:
+    dealerBestTotal: 
     options: 
+
+Hit:
+    newCard: ,
+    bank: bank,
+    username: ,
+    bet: ,
+    playerHand: 
+    dealerHand: 
+    playerBestTotal:
+    dealerBestTotal:
+    options: 
+
+
 
 
 

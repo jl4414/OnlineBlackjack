@@ -9,26 +9,53 @@ app.use(express.static("public"));
 const ejs = require('ejs');
 app.set('view engine', 'ejs');
 const deckOfCards = require("deck-o-cards");
+const e = require("express");
 
 bank = 100;
+bet = 5;
 username = "jl4414";
+playerHand1 = [];
+playerHand2 = [];
+dealerHand = [];
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");
 });
 
-app.get("/", function(req, res){
+app.get("/deal", function(req, res){
+  playerHand1 = randomDeal(2);
+  dealerHand = randomDeal(1);
   res.render("deal", {
     bank: bank,
     username: username,
-    bet: 5,
-    playerHand: [{ number: 2, name: 'two', type: '♠️' }, { number: 9, name: 'nine', type: '♦️' },],
-    dealerHand: [{ number: 2, name: 'two', type: '♠️' }],
-    bestTotal: bestTotal([{ number: 2, name: 'two', type: '♠️' }, { number: 9, name: 'nine', type: '♦️' },]),
+    bet: bet,
+    playerHand: playerHand1,
+    dealerHand: dealerHand,
+    playerBestTotal: bestTotal(playerHand1),
+    dealerBestTotal: bestTotal(dealerHand),
     options: ["Hit", "Stand", "Double", "Split"]
   });
 })
 
+app.get("/Hit", function(req, res){
+  playerHand1 = playerHand1.concat(randomDeal(1));
+  if (bestTotal(playerHand1) < 22){
+    res.render("hit", {
+      bank: bank,
+      username: username,
+      newCard: playerHand1[playerHand1.length - 1],
+      bet: bet,
+      playerHand: playerHand1,
+      dealerHand: dealerHand,
+      playerBestTotal: bestTotal(playerHand1),
+      dealerBestTotal: bestTotal(dealerHand),
+      options: ["Hit", "Stand",]
+    });
+  }
+  else {
+    res.redirect("/Bust")
+  }
+});
 
 
 
@@ -86,4 +113,10 @@ function betOutcome(playerHand, dealerHand, bet) {
       return bet;
     }
   }
+}
+
+function randomDeal(amountOfCards) {
+  deal = [];
+  deal = Array.from(deckOfCards.randomizedDeck()).slice(0, amountOfCards);
+  return deal;
 }

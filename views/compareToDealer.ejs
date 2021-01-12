@@ -1,0 +1,37 @@
+<%- include('partials/header'); -%>
+
+<h1>YOU <%= result[0] %></h1>
+<h4>You <%= result[1] %>: $<%= result[2]%></h4>
+
+
+<br>
+<br>
+
+<h4>Your hand:</h4>
+<h1>
+    <% playerHand.forEach(function(item){ %>
+    <%= item.name %> <%= item.type %> 
+    &emsp;
+    <% }) %>
+    
+</h1>
+<p>Your best total is: <%= playerBestTotal %></p>
+
+<br>
+<br>
+<h4>The dealer hits to:</h4>
+<h1>
+    <%= dealerHand[0].name %> <%= dealerHand[0].type %>
+</h1>
+<p>Dealer best total is: <%= dealerBestTotal %></p>
+
+<br>
+<br>
+<h4>Options:</h4>
+<h1>
+    <% options.forEach(function(item){ %>
+        <a href="/<%= item %>"><%= item %></a>
+        &emsp;
+    <% }) %>
+</h1>
+<%- include('partials/footer'); -%>

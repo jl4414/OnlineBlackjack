@@ -31,6 +31,20 @@ Bust:
     dealerBestTotal:
     options: 
 
+Compare to dealer:
+    result: ,
+    newCard: ,
+    bank: bank,
+    username: ,
+    bet: ,
+    playerHand: 
+    dealerHand: 
+    playerBestTotal:
+    dealerBestTotal:
+    options: 
+
+
+
 
 
 

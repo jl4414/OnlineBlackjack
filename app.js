@@ -17,6 +17,7 @@ username = "jl4414";
 playerHand1 = [];
 playerHand2 = [];
 dealerHand = [];
+result = [];
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");
@@ -72,6 +73,36 @@ app.get("/Bust", function(req, res){
   });
 })
 
+app.get("/Stand", function(req, res){
+  dealerHand = dealerHit(dealerHand);
+  if (bestTotal(dealerHand) > 21){
+    result = ["WIN", "win", bet];
+    bank += bet;
+  }
+  else if (bestTotal(dealerHand) > bestTotal(playerHand1)){
+    result = ["LOSE", "lose", bet];
+    bank -= bet;
+  }
+  else if (bestTotal(dealerHand) < bestTotal(playerHand1)){
+    result = ["WIN", "win", bet];
+    bank += bet;
+  }
+  else {
+    result = ["DRAW", "draw", 0];
+  }
+  res.render("compareToDealer", {
+    bank: bank,
+    result: result,
+    username: username,
+    newCard: playerHand1[playerHand1.length - 1],
+    bet: bet,
+    playerHand: playerHand1,
+    dealerHand: dealerHand,
+    playerBestTotal: bestTotal(playerHand1),
+    dealerBestTotal: bestTotal(dealerHand),
+    options: ["Play Again"]
+  });
+});
 
 function sumHand(hand) {
   sum = 0;
@@ -133,4 +164,11 @@ function randomDeal(amountOfCards) {
   deal = [];
   deal = Array.from(deckOfCards.randomizedDeck()).slice(0, amountOfCards);
   return deal;
+}
+
+function dealerHit(hand){
+  while (bestTotal(hand) < 17) {
+    hand = hand.concat(randomDeal(1));
+  }
+  return hand;
 }

@@ -9,3 +9,7 @@ body {
 .right-justify {
     text-align: right;
 }
+
+#my{
+    zoom: 75%;
+    }

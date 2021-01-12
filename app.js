@@ -23,7 +23,7 @@ app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");
 });
 
-app.get("/deal", function(req, res){
+app.get("/Deal", function(req, res){
   playerHand1 = randomDeal(2);
   dealerHand = randomDeal(1);
   res.render("deal", {
@@ -103,6 +103,10 @@ app.get("/Stand", function(req, res){
     options: ["Play Again"]
   });
 });
+
+app.get("/playAgain", function(req, res){
+  res.redirect("/Deal");
+})
 
 function sumHand(hand) {
   sum = 0;

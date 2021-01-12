@@ -21,7 +21,10 @@
 <br>
 <h4>The dealer hits to:</h4>
 <h1>
-    <%= dealerHand[0].name %> <%= dealerHand[0].type %>
+    <% dealerHand.forEach(function(item){ %>
+        <%= item.name %> <%= item.type %> 
+        &emsp;
+        <% }) %>
 </h1>
 <p>Dealer best total is: <%= dealerBestTotal %></p>
 
@@ -30,7 +33,7 @@
 <h4>Options:</h4>
 <h1>
     <% options.forEach(function(item){ %>
-        <a href="/<%= item %>"><%= item %></a>
+        <a href="/playAgain"><%= item %></a>
         &emsp;
     <% }) %>
 </h1>

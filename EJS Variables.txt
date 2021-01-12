@@ -20,6 +20,17 @@ Hit:
     dealerBestTotal:
     options: 
 
+Bust:
+    newCard: ,
+    bank: bank,
+    username: ,
+    bet: ,
+    playerHand: 
+    dealerHand: 
+    playerBestTotal:
+    dealerBestTotal:
+    options: 
+
 
 
 

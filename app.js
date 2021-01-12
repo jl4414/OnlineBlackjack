@@ -57,6 +57,20 @@ app.get("/Hit", function(req, res){
   }
 });
 
+app.get("/Bust", function(req, res){
+  bank -= bet;
+  res.render("bust", {
+    bank: bank,
+    username: username,
+    newCard: playerHand1[playerHand1.length - 1],
+    bet: bet,
+    playerHand: playerHand1,
+    dealerHand: dealerHand,
+    playerBestTotal: bestTotal(playerHand1),
+    dealerBestTotal: bestTotal(dealerHand),
+    options: ["Play Again"]
+  });
+})
 
 
 function sumHand(hand) {

@@ -1,0 +1,43 @@
+<%- include('partials/header'); -%>
+
+<h1>YOU BUSTED</h1>
+<h4>You lose: $<%= bet%></h4>
+
+
+<br>
+<br>
+<h4>You've been dealt: </h4>
+<h1><%= newCard.name %> <%= newCard.type %></h1>
+
+
+<br>
+<br>
+
+<h4>Your hand:</h4>
+<h1>
+    <% playerHand.forEach(function(item){ %>
+    <%= item.name %> <%= item.type %> 
+    &emsp;
+    <% }) %>
+    
+</h1>
+<p>Your best total is: <%= playerBestTotal %></p>
+
+<br>
+<br>
+<h4>The dealer shows:</h4>
+<h1>
+    <%= dealerHand[0].name %> <%= dealerHand[0].type %>
+</h1>
+<p>Dealer best total is: <%= dealerBestTotal %></p>
+
+<br>
+<br>
+<h4>Options:</h4>
+<h1>
+    <% options.forEach(function(item){ %>
+        <a href="/<%= item %>"><%= item %></a>
+        &emsp;
+    <% }) %>
+</h1>
+<%- include('partials/footer'); -%>

@@ -19,6 +19,7 @@ playerHand2 = [];
 dealerHand = [];
 result = [];
 options = [];
+split = 0;
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");
@@ -56,7 +57,8 @@ app.post("/bet", function(req, res){
 });
 
 app.get("/deal", function(req, res){
-  playerHand1 = randomDeal(2);
+  // playerHand1 = randomDeal(2);
+  playerHand1 = [{ number: 5, name: '5' , type: '♦️'}, { number: 5, name: '5' , type: '♦️'}]
   dealerHand = randomDeal(1);
   if (bet * 2 > bank){
     options = ["Hit", "Stand"];
@@ -80,16 +82,33 @@ app.get("/deal", function(req, res){
 })
 
 app.get("/hit", function(req, res){
-  playerHand1 = playerHand1.concat(randomDeal(1));
-  if (bestTotal(playerHand1) < 22){
+  hand = [];
+  if (split == 0){
+    message = "";
+    playerHand1 = playerHand1.concat(randomDeal(1));
+    hand = playerHand1;
+  }
+  else if (split == 1){
+    message = "Hand 1"
+    playerHand1 = playerHand1.concat(randomDeal(1));
+    hand = playerHand1;
+  }
+  else {
+    message = "Hand 2"
+    playerHand2 = playerHand2.concat(randomDeal(1));
+    hand = playerHand2;
+  }
+
+  if (bestTotal(hand) < 22){
     res.render("hit", {
+      message: message,
       bank: bank,
       username: username,
-      newCard: playerHand1[playerHand1.length - 1],
+      newCard: hand[hand.length - 1],
       bet: bet,
-      playerHand: playerHand1,
+      playerHand: hand,
       dealerHand: dealerHand,
-      playerBestTotal: bestTotal(playerHand1),
+      playerBestTotal: bestTotal(hand),
       dealerBestTotal: bestTotal(dealerHand),
       options: ["Hit", "Stand",]
     });
@@ -97,20 +116,38 @@ app.get("/hit", function(req, res){
   else {
     res.redirect("/bust")
   }
+  
 });
 
 app.get("/bust", function(req, res){
+  if (split == 0){
+    message = "";
+    hand = playerHand1;
+    options = "Play Again"
+  }
+  else if (split == 1){
+    message = "Hand 1";
+    hand = playerHand1;
+    options = "Next Hand"
+  }
+  else {
+    message = "Hand 2";
+    hand = playerHand2;
+    options = "See Result";
+  }
+
   bank -= bet;
   res.render("bust", {
+    message: message,
     bank: bank,
     username: username,
-    newCard: playerHand1[playerHand1.length - 1],
+    newCard: hand[hand.length - 1],
     bet: bet,
-    playerHand: playerHand1,
+    playerHand: hand,
     dealerHand: dealerHand,
-    playerBestTotal: bestTotal(playerHand1),
+    playerBestTotal: bestTotal(hand),
     dealerBestTotal: bestTotal(dealerHand),
-    options: ["Play Again"]
+    options: options,
   });
 })
 
@@ -145,8 +182,25 @@ app.get("/stand", function(req, res){
   });
 });
 
+app.get("/split", function(req, res){
+  playerHand2 = [playerHand1[1]];
+  playerHand1.pop();
+  split++;
+  res.redirect("/hit");
+});
+
 app.get("/playAgain", function(req, res){
-  res.redirect("/");
+  if (split == 0){
+    res.redirect("/");
+  }
+  else if (split == 1){
+    split++;
+    res.redirect("/hit");
+  }
+  else {
+    res.redirect("/splitResults");
+  }
+  
 })
 
 function sumHand(hand) {

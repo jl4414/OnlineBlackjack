@@ -152,34 +152,43 @@ app.get("/bust", function(req, res){
 })
 
 app.get("/stand", function(req, res){
-  dealerHand = dealerHit(dealerHand);
-  if (bestTotal(dealerHand) > 21){
-    result = ["WIN", "win", bet];
-    bank += bet;
+  if (split == 0){
+    dealerHand = dealerHit(dealerHand);
+    if (bestTotal(dealerHand) > 21){
+      result = ["WIN", "win", bet];
+      bank += bet;
+    }
+    else if (bestTotal(dealerHand) > bestTotal(playerHand1)){
+      result = ["LOSE", "lose", bet];
+      bank -= bet;
+    }
+    else if (bestTotal(dealerHand) < bestTotal(playerHand1)){
+      result = ["WIN", "win", bet];
+      bank += bet;
+    }
+    else {
+      result = ["DRAW", "draw", 0];
+    }
+    res.render("compareToDealer", {
+      bank: bank,
+      result: result,
+      username: username,
+      newCard: playerHand1[playerHand1.length - 1],
+      bet: bet,
+      playerHand: playerHand1,
+      dealerHand: dealerHand,
+      playerBestTotal: bestTotal(playerHand1),
+      dealerBestTotal: bestTotal(dealerHand),
+      options: ["Play Again"]
+    });
   }
-  else if (bestTotal(dealerHand) > bestTotal(playerHand1)){
-    result = ["LOSE", "lose", bet];
-    bank -= bet;
-  }
-  else if (bestTotal(dealerHand) < bestTotal(playerHand1)){
-    result = ["WIN", "win", bet];
-    bank += bet;
-  }
+  else if (split ==  1){
+    res.redirect("/playAgain");
+  } 
   else {
-    result = ["DRAW", "draw", 0];
+    res.redirect("/splitResults");
   }
-  res.render("compareToDealer", {
-    bank: bank,
-    result: result,
-    username: username,
-    newCard: playerHand1[playerHand1.length - 1],
-    bet: bet,
-    playerHand: playerHand1,
-    dealerHand: dealerHand,
-    playerBestTotal: bestTotal(playerHand1),
-    dealerBestTotal: bestTotal(dealerHand),
-    options: ["Play Again"]
-  });
+  
 });
 
 app.get("/split", function(req, res){

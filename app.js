@@ -12,20 +12,61 @@ const deckOfCards = require("deck-o-cards");
 const e = require("express");
 
 bank = 100;
-bet = 5;
+bet = 0;
 username = "jl4414";
 playerHand1 = [];
 playerHand2 = [];
 dealerHand = [];
 result = [];
+options = [];
 
 app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");
 });
 
-app.get("/Deal", function(req, res){
+app.get("/", function(req, res){
+  res.render("bet", {
+    message:"",
+    bank: bank,
+    bet: bet,
+  })
+});
+
+app.post("/bet", function(req, res){
+  bet = Number(req.body.bet);
+  if (bet > bank){
+    bet = 0;
+    res.render("bet", {
+      message: "The bet must be smaller than the bank",
+      bank: bank,
+      bet: bet,
+    })
+  }
+  else if (bet < 0) {
+    bet = 0;
+    res.render("bet", {
+      message: "The bet must be larger than 0",
+      bank: bank,
+      bet: bet,
+    })
+  }
+  else {
+    res.redirect("/deal");
+  }
+});
+
+app.get("/deal", function(req, res){
   playerHand1 = randomDeal(2);
   dealerHand = randomDeal(1);
+  if (bet * 2 > bank){
+    options = ["Hit", "Stand"];
+  }
+  else if (playerHand1[0].number == playerHand1[1].number){
+    options = ["Hit", "Stand", "Double", "Split"];
+  }
+  else {
+    options = ["Hit", "Stand", "Double"];
+  }
   res.render("deal", {
     bank: bank,
     username: username,
@@ -34,11 +75,11 @@ app.get("/Deal", function(req, res){
     dealerHand: dealerHand,
     playerBestTotal: bestTotal(playerHand1),
     dealerBestTotal: bestTotal(dealerHand),
-    options: ["Hit", "Stand", "Double", "Split"]
+    options: options,
   });
 })
 
-app.get("/Hit", function(req, res){
+app.get("/hit", function(req, res){
   playerHand1 = playerHand1.concat(randomDeal(1));
   if (bestTotal(playerHand1) < 22){
     res.render("hit", {
@@ -54,11 +95,11 @@ app.get("/Hit", function(req, res){
     });
   }
   else {
-    res.redirect("/Bust")
+    res.redirect("/bust")
   }
 });
 
-app.get("/Bust", function(req, res){
+app.get("/bust", function(req, res){
   bank -= bet;
   res.render("bust", {
     bank: bank,
@@ -73,7 +114,7 @@ app.get("/Bust", function(req, res){
   });
 })
 
-app.get("/Stand", function(req, res){
+app.get("/stand", function(req, res){
   dealerHand = dealerHit(dealerHand);
   if (bestTotal(dealerHand) > 21){
     result = ["WIN", "win", bet];
@@ -105,7 +146,7 @@ app.get("/Stand", function(req, res){
 });
 
 app.get("/playAgain", function(req, res){
-  res.redirect("/Deal");
+  res.redirect("/");
 })
 
 function sumHand(hand) {

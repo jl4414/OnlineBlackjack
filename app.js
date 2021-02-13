@@ -57,8 +57,7 @@ app.post("/bet", function(req, res){
 });
 
 app.get("/deal", function(req, res){
-  // playerHand1 = randomDeal(2);
-  playerHand1 = [{ number: 5, name: '5' , type: '♦️'}, { number: 5, name: '5' , type: '♦️'}]
+  playerHand1 = randomDeal(2);
   dealerHand = randomDeal(1);
   if (bet * 2 > bank){
     options = ["Hit", "Stand"];
@@ -122,6 +121,7 @@ app.get("/hit", function(req, res){
 app.get("/bust", function(req, res){
   if (split == 0){
     message = "";
+    result = normalMessage(playerHand1, dealerHand, bet);
     hand = playerHand1;
     options = "Play Again"
   }
@@ -135,14 +135,15 @@ app.get("/bust", function(req, res){
     hand = playerHand2;
     options = "See Result";
   }
-
-  bank -= bet;
+  if (split == 0){
+    bank -= bet;
+  }
   res.render("bust", {
     message: message,
     bank: bank,
     username: username,
     newCard: hand[hand.length - 1],
-    bet: bet,
+    result: result,
     playerHand: hand,
     dealerHand: dealerHand,
     playerBestTotal: bestTotal(hand),
@@ -154,21 +155,8 @@ app.get("/bust", function(req, res){
 app.get("/stand", function(req, res){
   if (split == 0){
     dealerHand = dealerHit(dealerHand);
-    if (bestTotal(dealerHand) > 21){
-      result = ["WIN", "win", bet];
-      bank += bet;
-    }
-    else if (bestTotal(dealerHand) > bestTotal(playerHand1)){
-      result = ["LOSE", "lose", bet];
-      bank -= bet;
-    }
-    else if (bestTotal(dealerHand) < bestTotal(playerHand1)){
-      result = ["WIN", "win", bet];
-      bank += bet;
-    }
-    else {
-      result = ["DRAW", "draw", 0];
-    }
+    result = normalMessage(playerHand1, dealerHand, bet);
+    bank += betOutcome(playerHand1, dealerHand, bet);
     res.render("compareToDealer", {
       bank: bank,
       result: result,
@@ -189,6 +177,41 @@ app.get("/stand", function(req, res){
     res.redirect("/splitResults");
   }
   
+});
+
+app.get("/splitResults", function(req, res){
+split = 0;
+dealerHand = dealerHit(dealerHand);
+if (bestTotal(playerHand1) > 21 && bestTotal(playerHand2) > 21 ){
+  bank -= bet * 2;
+  res.render("doubleBust", {
+    playerHand1: playerHand1,
+    playerHand2: playerHand2,
+    playerBestTotal1: bestTotal(playerHand1),
+    playerBestTotal2: bestTotal(playerHand2),
+    bet: bet * 2,
+    options: ["Play Again"]
+  })
+}
+else {
+  result1 = splitMessage(playerHand1, dealerHand, bet, 1);
+  result2 = splitMessage(playerHand2, dealerHand, bet, 2);
+  bank += (betOutcome(playerHand1, dealerHand, bet) + betOutcome(playerHand2, dealerHand, bet));
+  res.render("splitResult", {
+    bank: bank,
+    username: username,
+    bet: bet,
+    playerHand1: playerHand1,
+    playerHand2: playerHand2,
+    result1: result1,
+    result2: result2,
+    dealerHand: dealerHand,
+    playerBestTotal1: bestTotal(playerHand1),
+    playerBestTotal2: bestTotal(playerHand2),
+    dealerBestTotal: bestTotal(dealerHand),
+    options: ["Play Again"],
+  })
+} 
 });
 
 app.get("/split", function(req, res){
@@ -219,6 +242,7 @@ function sumHand(hand) {
   });
   return sum;
 }
+
 function bestTotal(hand) {
   aces = 0;
   total = 0;
@@ -252,7 +276,7 @@ function betOutcome(playerHand, dealerHand, bet) {
   if (bestTotal(playerHand) > 21) {
     return (bet * -1);
   }
-  else if (bestTotal(dealerHand > 21)) {
+  else if (bestTotal(dealerHand) >  21) {
     return bet;
   }
   else {
@@ -279,4 +303,41 @@ function dealerHit(hand){
     hand = hand.concat(randomDeal(1));
   }
   return hand;
+}
+
+function splitMessage(playerHand, dealerHand, bet, handNumber){
+  
+  if (bestTotal(playerHand) > 21){
+    return "Hand " + handNumber + " busted - you lose $" + bet;
+  }
+  else if (bestTotal(dealerHand) > 21) {
+    return "Dealer busted - you win $" + bet;
+  }
+  else if (bestTotal(playerHand) > bestTotal(dealerHand)){
+    return "Hand " + handNumber + " beat the dealer - you win $" + bet;
+  }
+  else if (bestTotal(playerHand) < bestTotal(dealerHand)) {
+    return "Hand " + handNumber + " lost to the dealer - you lose $" + bet;
+  }
+  else {
+    return "Hand " + handNumber + " drew to the dealer";
+  }
+}
+
+function normalMessage(playerHand, dealerHand, bet){
+  if (bestTotal(playerHand) > 21){
+    return "You busted - you lose $" + bet;
+  }
+  else if (bestTotal(dealerHand) > 21) {
+    return "Dealer busted - you win $" + bet;
+  }
+  else if (bestTotal(playerHand) > bestTotal(dealerHand)){
+    return "You beat the dealer - you win $" + bet;
+  }
+  else if (bestTotal(playerHand) < bestTotal(dealerHand)) {
+    return "You lost to the dealer - you lose $" + bet;
+  }
+  else {
+    return "You drew to the dealer";
+  }
 }

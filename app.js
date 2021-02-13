@@ -13,7 +13,7 @@ const e = require("express");
 
 bank = 100;
 bet = 0;
-username = "jl4414";
+username = "dummy";
 playerHand1 = [];
 playerHand2 = [];
 dealerHand = [];
@@ -128,11 +128,13 @@ app.get("/bust", function(req, res){
   else if (split == 1){
     message = "Hand 1";
     hand = playerHand1;
+    result = normalMessage(playerHand1, dealerHand, bet);
     options = "Next Hand"
   }
   else {
     message = "Hand 2";
     hand = playerHand2;
+    result = normalMessage(playerHand2, dealerHand, bet);
     options = "See Result";
   }
   if (split == 0){
@@ -238,7 +240,12 @@ app.get("/playAgain", function(req, res){
 app.get("/double", function (req, res){
   bet = bet * 2;
   playerHand1 = playerHand1.concat(randomDeal(1));
-  res.redirect("/stand");
+  if (bestTotal(playerHand1) > 21){
+    res.redirect("/bust");
+  }
+  else {
+    res.redirect("/stand");
+  }
 });
 
 function sumHand(hand) {

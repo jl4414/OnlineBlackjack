@@ -235,6 +235,12 @@ app.get("/playAgain", function(req, res){
   
 })
 
+app.get("/double", function (req, res){
+  bet = bet * 2;
+  playerHand1 = playerHand1.concat(randomDeal(1));
+  res.redirect("/stand");
+});
+
 function sumHand(hand) {
   sum = 0;
   hand.forEach(function (item) {

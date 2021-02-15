@@ -26,11 +26,18 @@ app.listen(process.env.PORT || 3000, function () {
 });
 
 app.get("/", function(req, res){
+  bet = 0;
   res.render("bet", {
     message:"",
     bank: bank,
     bet: bet,
   })
+});
+
+
+app.get("/reset", function(req, res){
+  bank = 100;
+  res.redirect("/");
 });
 
 app.post("/bet", function(req, res){

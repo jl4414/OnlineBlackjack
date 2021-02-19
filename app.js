@@ -29,6 +29,8 @@ split = 0;
 
 db.connect('mongodb+srv://jasaro:test@cluster0.9mu9m.mongodb.net/onlineBlackjack?retryWrites=true&w=majority');
 
+//test
+
 //Methods
 app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");

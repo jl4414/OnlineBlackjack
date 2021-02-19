@@ -28,8 +28,21 @@ split = 0;
 //Database operations
 
 db.connect('mongodb+srv://jasaro:test@cluster0.9mu9m.mongodb.net/onlineBlackjack?retryWrites=true&w=majority');
+var handLog = {
+  username: String,
+  bank: Number,
+  bet: Number,
+  intialPlayerDeal: Array,
+  initialDealerDeal: Array,
+  playerActions: Array,
+  finalDealerDeal: Array,
+  outcome: String,
+}
 
-//test
+handSchema = mongoose.Schema(handLog);
+var Hand = mongoose.model('Hand', handSchema);
+
+handLog.playerActions = [];
 
 //Methods
 app.listen(process.env.PORT || 3000, function () {
@@ -73,6 +86,9 @@ app.post("/bet", function(req, res){
     })
   }
   else {
+    handLog.username = username;
+    handLog.bank = bank;
+    handLog.bet = bet;
     res.redirect("/deal");
   }
 });
@@ -81,6 +97,10 @@ app.post("/bet", function(req, res){
 app.get("/deal", function(req, res){
   playerHand1 = randomDeal(2);
   dealerHand = randomDeal(1);
+
+  handLog.intialPlayerDeal = playerHand1;
+  handLog.initialDealerDeal = dealerHand;
+
   if (bet * 2 > bank){
     options = ["Hit", "Stand"];
   }
@@ -104,10 +124,12 @@ app.get("/deal", function(req, res){
 
 //Deals a card to the player. Renders a message if in split about the hand number (1 or 2). If the card results in a bust, redirects to the bust page
 app.get("/hit", function(req, res){
+  handLog.playerActions.push("H");
   hand = [];
   if (split == 0){
     message = "";
     playerHand1 = playerHand1.concat(randomDeal(1));
+    handLog.playerActions.push(bestTotal(playerHand1));
     hand = playerHand1;
   }
   else if (split == 1){
@@ -136,6 +158,7 @@ app.get("/hit", function(req, res){
     });
   }
   else {
+
     res.redirect("/bust")
   }
   
@@ -148,8 +171,8 @@ app.get("/bust", function(req, res){
     result = normalMessage(playerHand1, dealerHand, bet);
     hand = playerHand1;
     options = "Play Again"
-
     bank -= bet;
+    handLog.playerActions.push("B");
   }
   else if (split == 1){
     message = "Hand 1";
@@ -181,6 +204,7 @@ app.get("/bust", function(req, res){
 //If in normal hand, redirects to a compareToDealer page. If in split, moves to next or renders splitResult page
 app.get("/stand", function(req, res){
   if (split == 0){
+    handLog.playerActions.push("S");
     dealerHand = dealerHit(dealerHand);
     result = normalMessage(playerHand1, dealerHand, bet);
     bank += betOutcome(playerHand1, dealerHand, bet);
@@ -254,6 +278,8 @@ app.get("/split", function(req, res){
 //However, in splits, playAgain redirects to further pages becuase the game is essentially played twice before restarting.
 app.get("/playAgain", function(req, res){
   if (split == 0){
+    handLog.finalDealerDeal = dealerHand;
+    db.uploadHand(handLog, Hand);
     res.redirect("/");
   }
   else if (split == 1){

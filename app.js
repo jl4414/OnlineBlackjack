@@ -273,6 +273,8 @@ app.get("/double", function (req, res){
 
 
 //Functions
+
+//Returns the sum of a players hand, assuming aces count as zero
 function sumHand(hand) {
   sum = 0;
   hand.forEach(function (item) {
@@ -281,6 +283,7 @@ function sumHand(hand) {
   return sum;
 }
 
+//Accounting for possibility that aces can count as 11, returns the total that is closest to 21
 function bestTotal(hand) {
   aces = 0;
   total = 0;
@@ -310,6 +313,7 @@ function bestTotal(hand) {
   }
 }
 
+//Compares playerHand and dealerHand and returns the outcome of bet (postive, negative, or zero if draw)
 function betOutcome(playerHand, dealerHand, bet) {
   if (bestTotal(playerHand) > 21) {
     return (bet * -1);
@@ -330,12 +334,14 @@ function betOutcome(playerHand, dealerHand, bet) {
   }
 }
 
+//Returns an array of random cards of length amountOfCards
 function randomDeal(amountOfCards) {
   deal = [];
   deal = Array.from(deckOfCards.randomizedDeck()).slice(0, amountOfCards);
   return deal;
 }
 
+//Takes the dealers hand and hits it until the best total is 17
 function dealerHit(hand){
   while (bestTotal(hand) < 17) {
     hand = hand.concat(randomDeal(1));
@@ -343,6 +349,7 @@ function dealerHit(hand){
   return hand;
 }
 
+//Returns a custom message based on outcomes of hand and the hand number in a split
 function splitMessage(playerHand, dealerHand, bet, handNumber){
   
   if (bestTotal(playerHand) > 21){
@@ -362,6 +369,7 @@ function splitMessage(playerHand, dealerHand, bet, handNumber){
   }
 }
 
+//Returns a custom message based on hand result
 function normalMessage(playerHand, dealerHand, bet){
   if (bestTotal(playerHand) > 21){
     return "You busted - you lose $" + bet;

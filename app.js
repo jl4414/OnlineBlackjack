@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const db = require("db");
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -23,6 +24,10 @@ result = [];
 options = [];
 split = 0;
 
+
+//Database operations
+
+db.connect('mongodb+srv://jasaro:test@cluster0.9mu9m.mongodb.net/onlineBlackjack?retryWrites=true&w=majority');
 
 //Methods
 app.listen(process.env.PORT || 3000, function () {

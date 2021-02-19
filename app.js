@@ -2,6 +2,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -21,10 +23,13 @@ result = [];
 options = [];
 split = 0;
 
+
+//Methods
 app.listen(process.env.PORT || 3000, function () {
   console.log("Listening on port 3000");
 });
 
+//Renders homepage with place to enter bet
 app.get("/", function(req, res){
   bet = 0;
   res.render("bet", {
@@ -34,12 +39,14 @@ app.get("/", function(req, res){
   })
 });
 
-
+//Resets the bank account to 100 and redirects back to homepage
 app.get("/reset", function(req, res){
   bank = 100;
   res.redirect("/");
 });
 
+
+//Validates the bet that is entered on the homepage. If not valid, returns to homepage with error. If valid, redirects to deal
 app.post("/bet", function(req, res){
   bet = Number(req.body.bet);
   if (bet > bank){
@@ -63,6 +70,7 @@ app.post("/bet", function(req, res){
   }
 });
 
+//Deals two cards to the player and one card to the dealer. Renders the correct options out of (Hit, Stand, Double, Split) depending on bank value and card values
 app.get("/deal", function(req, res){
   playerHand1 = randomDeal(2);
   dealerHand = randomDeal(1);
@@ -87,6 +95,7 @@ app.get("/deal", function(req, res){
   });
 })
 
+//Deals a card to the player. Renders a message if in split about the hand number (1 or 2). If the card results in a bust, redirects to the bust page
 app.get("/hit", function(req, res){
   hand = [];
   if (split == 0){
@@ -125,12 +134,15 @@ app.get("/hit", function(req, res){
   
 });
 
+//Renders the bust page. Depending on if in a split or not, options change and message changes.
 app.get("/bust", function(req, res){
   if (split == 0){
     message = "";
     result = normalMessage(playerHand1, dealerHand, bet);
     hand = playerHand1;
     options = "Play Again"
+
+    bank -= bet;
   }
   else if (split == 1){
     message = "Hand 1";
@@ -144,9 +156,7 @@ app.get("/bust", function(req, res){
     result = normalMessage(playerHand2, dealerHand, bet);
     options = "See Result";
   }
-  if (split == 0){
-    bank -= bet;
-  }
+  
   res.render("bust", {
     message: message,
     bank: bank,
@@ -161,6 +171,7 @@ app.get("/bust", function(req, res){
   });
 })
 
+//If in normal hand, redirects to a compareToDealer page. If in split, moves to next or renders splitResult page
 app.get("/stand", function(req, res){
   if (split == 0){
     dealerHand = dealerHit(dealerHand);
@@ -188,6 +199,7 @@ app.get("/stand", function(req, res){
   
 });
 
+//Split results. If both hands bust, go to special double bust page. If not, render messages for both hands and change bank to reflect results
 app.get("/splitResults", function(req, res){
 split = 0;
 dealerHand = dealerHit(dealerHand);
@@ -223,6 +235,7 @@ else {
 } 
 });
 
+//Splits the playes hand into two hands, and increments the split operator which controls messages on the hit and bust pages
 app.get("/split", function(req, res){
   playerHand2 = [playerHand1[1]];
   playerHand1.pop();
@@ -230,6 +243,8 @@ app.get("/split", function(req, res){
   res.redirect("/hit");
 });
 
+//this is the most confusing one. /playagain is the default route option for options on the bust and compare to dealer pages and normally restarts the game. 
+//However, in splits, playAgain redirects to further pages becuase the game is essentially played twice before restarting.
 app.get("/playAgain", function(req, res){
   if (split == 0){
     res.redirect("/");
@@ -244,6 +259,7 @@ app.get("/playAgain", function(req, res){
   
 })
 
+//Doubles the bet, adds a card, and immediatly assesses whether it is a bust. If not, redirects immediatly to compare to dealer
 app.get("/double", function (req, res){
   bet = bet * 2;
   playerHand1 = playerHand1.concat(randomDeal(1));
@@ -255,6 +271,8 @@ app.get("/double", function (req, res){
   }
 });
 
+
+//Functions
 function sumHand(hand) {
   sum = 0;
   hand.forEach(function (item) {

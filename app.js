@@ -95,9 +95,9 @@ app.post("/bet", function(req, res){
 //Deals two cards to the player and one card to the dealer. Renders the correct options out of (Hit, Stand, Double, Split) depending on bank value and card values
 app.get("/deal", function(req, res){
   playerHand1 = randomDeal(2);
+  dealerHand = randomDeal(1);
 
   // Forced double:
-  // dealerHand = randomDeal(1);
   // playerHand1 = [{ number: 7, name: '7', type: '❤️'}, { number: 7, name: '7', type: '❤️'},]
 
   handLog.intialPlayerDeal = playerHand1;

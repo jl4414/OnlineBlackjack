@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const db = require("db");
+const db = require(__dirname + "/db");
 
 app.use(bodyParser.urlencoded({
   extended: true
